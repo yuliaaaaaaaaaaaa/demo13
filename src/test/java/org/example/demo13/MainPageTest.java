@@ -10,6 +10,7 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import java.util.ArrayList;
 
 import java.time.Duration;
 import java.util.List;
@@ -47,6 +48,7 @@ public class MainPageTest {
 
     public void clickElement(List<WebElement> results, int num) {
         results.get(num).click();
+        System.out.println("Перешли по ссылке");
     }
 
     @Test
@@ -58,13 +60,14 @@ public class MainPageTest {
 
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(6));
         wait.until(ExpectedConditions.and(
-                ExpectedConditions.attributeContains(By.cssSelector(":not(ad_url) > cite"), "href", "selenium"),
-                ExpectedConditions.elementToBeClickable(By.cssSelector(":not(ad_url) > cite"))
-        ));
+                ExpectedConditions.textToBePresentInElementLocated(By.cssSelector(":not(.b_adurl) > cite"), "selenium"),
+                ExpectedConditions.elementToBeClickable(By.cssSelector(":not(.b_adurl) > cite"))));
+
         List<WebElement> results = driver.findElements(By.cssSelector(":not(ad_url) > cite"));
         clickElement(results, 0);
-
-        assertEquals("https://www.selenium.dev/ ", driver.getCurrentUrl(), "Открылась не та ссылка");
+        ArrayList tabs = new ArrayList<> (driver.getWindowHandles());
+        driver.switchTo().window(tabs.get(0).toString());
+        String currentUrl = driver.getCurrentUrl();
+        assertEquals("https://www.selenium.dev/", currentUrl, "Открылась не та ссылка");
     }
 }
-
